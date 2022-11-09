@@ -18,6 +18,7 @@ motor RightDriveMotorA = motor(PORT6, ratio6_1, false);
 motor RightDriveMotorB = motor(PORT7, ratio6_1, false);
 motor_group RightDrive = motor_group(RightDriveMotorA, RightDriveMotorB);
 motor RightTop = motor(PORT8, ratio6_1, false);
+digital_out EndgamePiston = digital_out(Brain.ThreeWirePort.A);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

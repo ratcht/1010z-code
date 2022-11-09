@@ -1,8 +1,14 @@
+#ifndef PIDF_H
+#define PIDF_H
+
 #include "vex.h"
 #include <cmath>
-#include "structs/path-struct.h"
+#include "helpers/calc-funcs.h"
+#include "helpers/rate-limiter.h"
+#include "subsystems/chassis-info.h"
+#include "subsystems/drivetrain.h"
 
-using namespace vex;
+
 
 class PIDF {       
   public:     
@@ -23,73 +29,47 @@ class PIDF {
     Point desiredPoint;
     double desiredValue;
 
-    PIDF(double k[4]) {
-      kP = k[0];
-      kI = k[1];
-      kD = k[2];
-      kF = k[3];
-    }
+    PIDF(double k[4]);
 
-    void changePID(double k[4]) {
-      kP = k[0];
-      kI = k[1];
-      kD = k[2];
-      kF = k[3];
-
-    }
+    void changePID(double k[4]);
     
-    void updatePIDValsSingle(double actual) {
+    void updatePIDValsSingle(double actual);
 
-      error = desiredValue - actual;
-      
-      //Derivative
-      derivative = error - prevError;
+    void updatePIDValsPoint(Point pos);
 
-      //Integral
-      totalError += error;
+    double calculateErrorPower();
 
-      //Derivative --> set prevError
-      prevError = error;
-    }
+    double calculateErrorXPower();
 
-    void updatePIDValsPoint(Point pos) {
+    double calculateErrorYPower();
 
-      errorX = desiredPoint.x - pos.x;
-      errorY = desiredPoint.y - pos.y; 
-      
-      
+    double calculateForwardPower(double targetVal);
 
-      // //Derivative
-      // derivative = error - prevError;
-
-      // //Integral
-      // totalError += error;
-
-      // //Derivative --> set prevError
-      // prevError = error;
-    }
-
-    double calculateErrorPower(){
-      return (error * kP) + (totalError * kI) + (derivative * kD);
-    }
-
-    double calculateErrorXPower(){
-      return (errorX * kP) + (totalError * kI) + (derivative * kD);
-    }
-
-    double calculateErrorYPower(){
-      return (errorY * kP) + (totalError * kI) + (derivative * kD);
-    }
-
-    double calculateForwardPower(double targetVal){
-      return (targetVal * kF);
-    }
-
-    void resetPID() {
-      error = 0, errorX = 0, errorY = 0; //SensorValue - DesiredValue : Position
-      prevError = 0; //Position 20ms ago
-      derivative = 0; //error - prevError : Speed
-      totalError = 0;
-    }
+    void resetPID();
 
 };
+
+
+inline double kLMotor[3] = {0.028, 0.0, 0.001}; //Starting Vals (No goal being lifted)
+inline double kRMotor[3] = {0.028, 0.0, 0.001}; //Starting Vals (No goal being lifted)
+inline double kInertial[3] = {0.06, 0.001, 0.0001}; //Distance sensor vals
+
+inline double desiredMotorVal = 0;
+
+
+int driverOnlyPID();
+
+inline PIDF driveLVals(kLMotor);
+inline PIDF driveRVals(kRMotor);
+inline PIDF turnVals(kInertial);
+
+inline bool enableDriverPID = true;
+inline bool resetDriveSensors = false;
+
+
+
+
+
+
+
+#endif

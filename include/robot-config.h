@@ -9,6 +9,7 @@ extern motor_group LeftDrive;
 extern motor LeftTop;
 extern motor_group RightDrive;
 extern motor RightTop;
+extern digital_out EndgamePiston;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

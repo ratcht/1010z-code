@@ -1,3 +1,14 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Inertial2            inertial      2               
+// Controller1          controller                    
+// LeftDrive            motor_group   3, 4            
+// LeftTop              motor         5               
+// RightDrive           motor_group   6, 7            
+// RightTop             motor         8               
+// EndgamePiston        digital_out   A               
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -24,6 +35,7 @@
 #include <cstring>
 
 
+
 using namespace vex;
 
 competition Competition;
@@ -38,6 +50,20 @@ void pre_auton(void) {
 
 
 void autonomous(void) {
+  enableDriverPID = true;
+  vex::task driveOnlyPID(driverOnlyPID);
+
+  desiredMotorVal = 150;
+  turnVals.desiredValue = 0;
+
+  vex::task::sleep(1250);
+
+  resetDriveSensors = true;
+  desiredMotorVal = 0;
+  turnVals.desiredValue = 45;
+
+  vex::task::sleep(50000);
+  EndgameFire();
 
 }
 
