@@ -69,7 +69,6 @@ void usercontrol(void) {
   while (std::getline(MyReadFile, myText)){
     Point one = parseString(myText);
 
-    
     list.push_back(one);
   }
 
