@@ -10,6 +10,10 @@ extern motor LeftTop;
 extern motor_group RightDrive;
 extern motor RightTop;
 extern digital_out EndgamePiston;
+extern encoder EncoderHorz;
+extern encoder EncoderPara;
+extern motor FlyWheel;
+extern motor Intake;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

@@ -14,11 +14,15 @@ motor LeftDriveMotorA = motor(PORT3, ratio6_1, false);
 motor LeftDriveMotorB = motor(PORT4, ratio6_1, false);
 motor_group LeftDrive = motor_group(LeftDriveMotorA, LeftDriveMotorB);
 motor LeftTop = motor(PORT5, ratio6_1, false);
-motor RightDriveMotorA = motor(PORT6, ratio6_1, false);
+motor RightDriveMotorA = motor(PORT6, ratio6_1, true);
 motor RightDriveMotorB = motor(PORT7, ratio6_1, false);
 motor_group RightDrive = motor_group(RightDriveMotorA, RightDriveMotorB);
 motor RightTop = motor(PORT8, ratio6_1, false);
 digital_out EndgamePiston = digital_out(Brain.ThreeWirePort.A);
+encoder EncoderHorz = encoder(Brain.ThreeWirePort.G);
+encoder EncoderPara = encoder(Brain.ThreeWirePort.E);
+motor FlyWheel = motor(PORT12, ratio18_1, false);
+motor Intake = motor(PORT18, ratio18_1, false);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

@@ -15,16 +15,16 @@ accel : ms^-2
 */
 
 //_odom
-extern double wheelDiameter; //wheel diameter 
-extern double hTCentre; // Left Tracking Wheel distance to centre: Sl
-extern double pTCentre; // Back Tracking Wheel distance to centre: Ss
+extern float wheelDiameter; //wheel diameter 
+extern float hTCentre; // Left Tracking Wheel distance to centre: Sl
+extern float pTCentre; // Back Tracking Wheel distance to centre: Ss
 
-extern double trackWidth; // Track Width
-extern double gearRatio; //base gearRatio
+extern float trackWidth; // Track Width
+extern float gearRatio; //base gearRatio
 
 //_motionprofile 
-//extern double maxVel;
-//extern double maxAccel;
+//extern float maxVel;
+//extern float maxAccel;
 
 extern Point finalPosition;
 
@@ -34,6 +34,9 @@ extern Point Goal;
 
 
 //----------------DRIVE SETTINGS------------------
-extern double turnImportance;
+extern float turnImportance;
+
+
+extern float rLookAhead;
 
 #endif

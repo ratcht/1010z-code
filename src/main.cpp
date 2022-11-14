@@ -8,6 +8,71 @@
 // RightDrive           motor_group   6, 7            
 // RightTop             motor         8               
 // EndgamePiston        digital_out   A               
+// EncoderHorz          encoder       G, H            
+// EncoderPara          encoder       E, F            
+// FlyWheel             motor         12              
+// Intake               motor         18              
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Inertial2            inertial      2               
+// Controller1          controller                    
+// LeftDrive            motor_group   3, 4            
+// LeftTop              motor         5               
+// RightDrive           motor_group   6, 7            
+// RightTop             motor         8               
+// EndgamePiston        digital_out   A               
+// EncoderHorz          encoder       G, H            
+// EncoderPara          encoder       E, F            
+// FlyWheel             motor         12              
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Inertial2            inertial      2               
+// Controller1          controller                    
+// LeftDrive            motor_group   3, 4            
+// LeftTop              motor         5               
+// RightDrive           motor_group   6, 7            
+// RightTop             motor         8               
+// EndgamePiston        digital_out   A               
+// EncoderHorz          encoder       G, H            
+// EncoderPara          encoder       E, F            
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Inertial2            inertial      2               
+// Controller1          controller                    
+// LeftDrive            motor_group   3, 4            
+// LeftTop              motor         5               
+// RightDrive           motor_group   6, 7            
+// RightTop             motor         8               
+// EndgamePiston        digital_out   A               
+// EncoderHorz          encoder       G, H            
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Inertial2            inertial      2               
+// Controller1          controller                    
+// LeftDrive            motor_group   3, 4            
+// LeftTop              motor         5               
+// RightDrive           motor_group   6, 7            
+// RightTop             motor         8               
+// EndgamePiston        digital_out   A               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Inertial2            inertial      2               
+// Controller1          controller                    
+// LeftDrive            motor_group   3, 4            
+// LeftTop              motor         5               
+// RightDrive           motor_group   6, 7            
+// RightTop             motor         8               
+// EndgamePiston        digital_out   A               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
@@ -44,6 +109,25 @@ competition Competition;
 void pre_auton(void) {
   vexcodeInit();
 
+  std::vector<Point> list;
+
+  // Create a text string, which is used to output the text file
+  std::string myText;
+
+  // Read from the text file
+  std::ifstream file("pure.txt");
+
+  // Use a while loop together with the getline() function to read the file line by line
+  while (std::getline(file, myText)){
+    Point one = parseString(myText);
+
+    list.push_back(one);
+  }
+
+  // Close the file
+  file.close();
+
+
  
 }
 
@@ -51,16 +135,25 @@ void pre_auton(void) {
 
 void autonomous(void) {
   enableDriverPID = true;
+  resetDriveSensors = true;
   vex::task driveOnlyPID(driverOnlyPID);
 
-  desiredMotorVal = 150;
+  disableDrive = false;
+  desiredMotorVal = 850;
   turnVals.desiredValue = 0;
 
-  vex::task::sleep(1250);
+  vex::task::sleep(2000);
+  
+  resetDriveSensors = true;
+  disableDrive = true;
+  desiredMotorVal = 0;
+  turnVals.desiredValue = 47;
+
+  vex::task::sleep(1550);
 
   resetDriveSensors = true;
-  desiredMotorVal = 0;
-  turnVals.desiredValue = 45;
+  disableDrive = false;
+  desiredMotorVal = -220;
 
   vex::task::sleep(50000);
   EndgameFire();
@@ -83,48 +176,23 @@ void initUserControl() {
 
 void usercontrol(void) {
 
-  std::vector<Point> list;
-
-  // Create a text string, which is used to output the text file
-  std::string myText;
-
-  // Read from the text file
-  std::ifstream MyReadFile("pure.txt");
-
-  // Use a while loop together with the getline() function to read the file line by line
-  while (std::getline(MyReadFile, myText)){
-    Point one = parseString(myText);
-
-    list.push_back(one);
-  }
-
-  // Close the file
-  MyReadFile.close();
-
   limiter rpmlimit;
   initUserControl();
 
+  Controller1.ButtonUp.pressed(EndgameFire);
+
   while (1) {
-    Brain.Screen.clearScreen();
-    Brain.Screen.setCursor(1,1);
-    Brain.Screen.print(list.size());
-    Brain.Screen.newLine();
-    Brain.Screen.print("%f, %f", list.at(3).x, list.at(3).y);
-    Brain.Screen.newLine();
-
-
-    //Brain.Screen.print(point.c_str());
 
 
 
     //---------------Drivetrain---------------
-    double fwdVal = Controller1.Axis3.position(percent);
-    double turnVal = Controller1.Axis1.position(percent);
+    float fwdVal = Controller1.Axis3.position(percent);
+    float turnVal = Controller1.Axis1.position(percent);
 
     //Volts Range:  -12 --> 12
-    double turnRPM = turnVal * 4.5; //convert percentage to volts
-    double fwdRPM = fwdVal * 4.5 * (1 - (std::abs(turnVal) * turnImportance)); 
-    fwdRPM = rpmlimit.rateLimiter(fwdRPM, 45);
+    float turnRPM = turnVal * 0.12; //convert percentage to volts
+    float fwdRPM = fwdVal * 0.12 * (1 - (std::abs(turnVal) * turnImportance)); 
+    //fwdRPM = rpmlimit.rateLimiter(fwdRPM, 45);
 
     SpinDrive(fwdRPM + turnRPM, fwdRPM - turnRPM);
 

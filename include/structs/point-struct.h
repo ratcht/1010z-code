@@ -15,38 +15,38 @@ Angles : Radians
 */
 
 struct Point {
-  double x, y;
+  float x, y;
 
-  double distanceFromStart;
-  double curvature;
+  float distanceFromStart;
+  float curvature;
 
-  double globalHeading;
-  double targetVelocity;
+  float globalHeading;
+  float targetVelocity;
 
-  double timeAtPoint;
+  float timeAtPoint;
 
-  void setCoordinates (std::vector<double> points) {
+  void setCoordinates (std::vector<float> points) {
     x = points.at(0);
     y = points.at(1);
   }
 
-  void setDistance (double distanceFromStart){
+  void setDistance (float distanceFromStart){
     this -> distanceFromStart = distanceFromStart;
   }
 
-  void setCurvature (double curvature){
+  void setCurvature (float curvature){
     this -> curvature = curvature;
   }
 
-  void setTargetVelocity (double targetVelocity){
+  void setTargetVelocity (float targetVelocity){
     this -> targetVelocity = targetVelocity;
   }
 
-  void setTime (double t) {
+  void setTime (float t) {
     this -> timeAtPoint = t;
   }
 
-  Point(std::vector<double> point){
+  Point(std::vector<float> point){
     x = point.at(0);
     y = point.at(1);
   }
@@ -58,14 +58,19 @@ struct Point {
 };
 
 //return the magnitude of a vector: c^2 = a^2 + b^2
-inline double getMagnitude(Point point) {
+inline float getMagnitude(Point point) {
   return sqrt( pow(point.x, 2) + pow(point.y, 2) );
 }
 
 
 //calculates the distance between 2 points
-inline double getDistance(Point p0, Point p1) {
+inline float getDistance(Point p0, Point p1) {
   return getMagnitude(Point({p1.x - p0.x, p1.y - p0.y}));
+}
+
+//calculates the distance between 2 points
+inline float getDistanceP(Point* p0, Point* p1) {
+  return getMagnitude(Point({p1->x - p0->x, p1->y - p0->y}));
 }
 
 #endif

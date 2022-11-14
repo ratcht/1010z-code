@@ -1,14 +1,14 @@
 #include "pidf/pidf.h"
 
 
-PIDF::PIDF(double k[4]) {
+PIDF::PIDF(float k[4]) {
   kP = k[0];
   kI = k[1];
   kD = k[2];
   kF = k[3];
 }
 
-void PIDF::changePID(double k[4]) {
+void PIDF::changePID(float k[4]) {
   kP = k[0];
   kI = k[1];
   kD = k[2];
@@ -16,7 +16,7 @@ void PIDF::changePID(double k[4]) {
 
 }
     
-void PIDF::updatePIDValsSingle(double actual) {
+void PIDF::updatePIDValsSingle(float actual) {
 
   error = desiredValue - actual;
       
@@ -34,6 +34,7 @@ void PIDF::updatePIDValsPoint(Point pos) {
 
   errorX = desiredPoint.x - pos.x;
   errorY = desiredPoint.y - pos.y; 
+  error = getDistanceP(&finalPosition, &pos);
       
       
 
@@ -47,19 +48,19 @@ void PIDF::updatePIDValsPoint(Point pos) {
   // prevError = error;
 }
 
-double PIDF::calculateErrorPower(){
+float PIDF::calculateErrorPower(){
   return (error * kP) + (totalError * kI) + (derivative * kD);
 }
 
-double PIDF::calculateErrorXPower(){
+float PIDF::calculateErrorXPower(){
   return (errorX * kP) + (totalError * kI) + (derivative * kD);
 }
 
-double PIDF::calculateErrorYPower(){
+float PIDF::calculateErrorYPower(){
   return (errorY * kP) + (totalError * kI) + (derivative * kD);
 }
 
-double PIDF::calculateForwardPower(double targetVal){
+float PIDF::calculateForwardPower(float targetVal){
   return (targetVal * kF);
 }
 
@@ -79,25 +80,30 @@ int driverOnlyPID(){
     if (resetDriveSensors) {
       resetDriveSensors = false;
       LeftDrive.setPosition(0, degrees);
+      LeftTop.setPosition(0, degrees);
+      RightTop.setPosition(0, degrees);
       RightDrive.setPosition(0, degrees);
     }
 
     //===============================================================
     //------------LATERAL PID------------//
-
   
-    int averagePosition = (LeftDrive.position(degrees)); //averages motor position of the 2 drive
-    driveLVals.desiredValue = desiredMotorVal;
-    driveRVals.desiredValue = desiredMotorVal;
+    lateralLMotorPower = 0;
+    lateralRMotorPower = 0;
+
+
+    if (!disableDrive){
+      driveLVals.desiredValue = desiredMotorVal;
+      driveRVals.desiredValue = desiredMotorVal;
+      
+      driveLVals.updatePIDValsSingle(LeftDrive.position(degrees)); //passes motor encoder val
+      driveRVals.updatePIDValsSingle(RightDrive.position(degrees)); //passes motor encoder val
+
+      lateralLMotorPower = driveLVals.calculateErrorPower(); 
+      lateralRMotorPower = driveRVals.calculateErrorPower(); 
+    }
+
     
-    driveLVals.updatePIDValsSingle(LeftDrive.position(degrees)); //passes motor encoder val
-    driveRVals.updatePIDValsSingle(RightDrive.position(degrees)); //passes motor encoder val
-
-
-
-    double lateralLMotorPower = driveLVals.calculateErrorPower(); 
-    double lateralRMotorPower = driveRVals.calculateErrorPower(); 
-
     //===============================================================
         
 
@@ -105,8 +111,8 @@ int driverOnlyPID(){
     //===============================================================
     //-------------TURN PID-------------//
 
-    double actualHeading = getInertialReading();
-    double turnMotorPower;
+    float actualHeading = toDeg(getInertialReading());
+    float turnMotorPower;
 
     //inertial sensor switch --> inertial must be turned off when using vision
     turnVals.updatePIDValsSingle(actualHeading); //passes inertial sensor val
@@ -114,6 +120,7 @@ int driverOnlyPID(){
 
 
     //===============================================================
+
 
     SpinDrive(lateralRMotorPower - turnMotorPower, lateralLMotorPower + turnMotorPower);
 
@@ -123,6 +130,45 @@ int driverOnlyPID(){
     Controller1.Screen.print("mpos %f, %f", LeftDrive.position(deg), RightDrive.position(deg));
     Controller1.Screen.newLine();
     Controller1.Screen.print("Ine: %f", actualHeading);
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("error: %f", turnVals.error);
+    Controller1.Screen.newLine();
+
+
+    vex::task::sleep(20);
+  }
+
+  return 1;
+}
+
+int turnOnlyPID(){
+
+  while(enableTurnPID) {
+
+    //===============================================================
+    //-------------TURN PID-------------//
+
+    float actualHeading = toDeg(getInertialReading());
+    float turnMotorPower;
+
+    //inertial sensor switch --> inertial must be turned off when using vision
+    turnVals.updatePIDValsSingle(actualHeading); //passes inertial sensor val
+    turnMotorPower = turnVals.calculateErrorPower(); 
+
+
+    //===============================================================
+
+
+    SpinDrive(-turnMotorPower,turnMotorPower);
+
+
+    Controller1.Screen.clearScreen();
+    Controller1.Screen.setCursor(1,1);
+    Controller1.Screen.print("mpos %f, %f", LeftDrive.position(deg), RightDrive.position(deg));
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("Ine: %f", actualHeading);
+    Controller1.Screen.newLine();
+    Controller1.Screen.print("error: %f", turnVals.error);
     Controller1.Screen.newLine();
 
 
