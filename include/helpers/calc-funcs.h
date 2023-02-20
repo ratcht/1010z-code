@@ -134,5 +134,11 @@ inline Point parseString(std::string split) {
   return p;
 }
 
+inline Point pointDAway(Point start, float dis, float theta) {
+  float x = start.x + dis*sin(theta);
+  float y = start.y + dis*cos(theta);
+
+  return Point({x,y});
+} 
 
 #endif

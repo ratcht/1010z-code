@@ -31,9 +31,9 @@ struct Path {
   }
 
   Point* getPointinTime (float t){
-    if (t > (points.size()-1)*0.1) return getPointinTime((points.size()-1) * 0.1);
-    
-    return getPointP(t/0.1);
+    if (t > (points.size()-1)*0.1) return &points.at(points.size()-1);
+    Point* pp = getPointP(t/0.1);
+    return pp;
   }
 
   //adds a point

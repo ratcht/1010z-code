@@ -8,21 +8,23 @@ using code = vision::code;
 brain  Brain;
 
 // VEXcode device constructors
-inertial Inertial2 = inertial(PORT2);
+inertial Inertial2 = inertial(PORT14);
 controller Controller1 = controller(primary);
-motor LeftDriveMotorA = motor(PORT3, ratio6_1, false);
-motor LeftDriveMotorB = motor(PORT4, ratio6_1, false);
+motor LeftDriveMotorA = motor(PORT8, ratio6_1, true);
+motor LeftDriveMotorB = motor(PORT19, ratio6_1, false);
 motor_group LeftDrive = motor_group(LeftDriveMotorA, LeftDriveMotorB);
-motor LeftTop = motor(PORT5, ratio6_1, false);
-motor RightDriveMotorA = motor(PORT6, ratio6_1, true);
-motor RightDriveMotorB = motor(PORT7, ratio6_1, false);
+motor LeftTop = motor(PORT7, ratio6_1, false);
+motor RightDriveMotorA = motor(PORT4, ratio6_1, false);
+motor RightDriveMotorB = motor(PORT5, ratio6_1, true);
 motor_group RightDrive = motor_group(RightDriveMotorA, RightDriveMotorB);
-motor RightTop = motor(PORT8, ratio6_1, false);
+motor RightTop = motor(PORT20, ratio6_1, true);
+digital_out MagazinePiston = digital_out(Brain.ThreeWirePort.C);
+encoder EncoderHorz = encoder(Brain.ThreeWirePort.E);
+encoder EncoderPara = encoder(Brain.ThreeWirePort.G);
+motor FlyWheel = motor(PORT2, ratio6_1, false);
+motor Intake = motor(PORT11, ratio18_1, false);
 digital_out EndgamePiston = digital_out(Brain.ThreeWirePort.A);
-encoder EncoderHorz = encoder(Brain.ThreeWirePort.G);
-encoder EncoderPara = encoder(Brain.ThreeWirePort.E);
-motor FlyWheel = motor(PORT12, ratio18_1, false);
-motor Intake = motor(PORT18, ratio18_1, false);
+digital_out BlooperPiston = digital_out(Brain.ThreeWirePort.D);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

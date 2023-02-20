@@ -1,6 +1,7 @@
 #ifndef INTAKE_H
 #define INTAKE_H
 
+
 #include "vex.h"
 #include "helpers/rate-limiter.h"
 
@@ -14,8 +15,7 @@ extern bool intakeReverse;
 
 
 extern void IntakeSwap();
-extern void IntakeReverseSwap();
-
+extern void StopAll();
 
 
 extern void ShooterSwap();

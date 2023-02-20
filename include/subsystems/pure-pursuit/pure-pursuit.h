@@ -11,8 +11,7 @@
 
 
 //------VARS--------
-inline Path desiredPath;
-inline Path finalPath;
+inline Path* finalPath;
 inline Point lookaheadPoint;
 inline Point* pclosePoint;
 inline float curvature;

@@ -44,7 +44,7 @@ void getWheelVals() {
   paraWheelPos = toRads(EncoderPara.position(degrees));
 
   horzWheelTrack = horzWheelPos * (wheelDiameter/2) * (-1);
-  paraWheelTrack = paraWheelPos * (wheelDiameter/2);
+  paraWheelTrack = paraWheelPos * (wheelDiameter/2) * (-1);
 
   deltaHT = horzWheelTrack - prevHVal;
   deltaPT = paraWheelTrack - prevPVal;
@@ -88,4 +88,185 @@ void odomTracking() {
 
 	finalPosition.y += h2 * (-sinP); // -sin(x) = sin(-x)
 	finalPosition.x += h2 * cosP; // cos(x) = cos(-x)
+}
+
+
+int DriverPIDF(){
+  Brain.Timer.reset();
+  driveVals.resetPID();
+  limiter lTurn;
+
+  while(enableDriverPID) {
+
+
+    if (resetPID) {
+      resetPID = false;
+      turnVals.resetPID();
+    }
+
+    if (resetBrainTimer) {
+      resetBrainTimer = false;
+      Brain.Timer.reset();
+    }
+
+
+    //1. get elapsed time
+    elapsedTime = roundOneDP(Brain.Timer.value());
+
+
+    //2. get desiredPoint
+    Point* pDesiredPoint = targetPath.getPointinTime(elapsedTime);
+    //set desiredvalue in pid
+    driveVals.desiredValue = pDesiredPoint->distanceFromStart;
+
+    targVel = pDesiredPoint->targetVelocity;
+    fPower = driveVals.calculateForwardPower(targVel);
+
+    fromStart = getDistance(targetPath.getPoint(0), finalPosition);
+
+    //update pidf
+    driveVals.updatePIDF(fromStart);
+    float pidP = driveVals.calculateErrorPower();
+
+    offFromTarget = getDistance(finalPosition, targetPath.points.at(targetPath.points.size()-1));
+
+    //turning
+    float turnError = fixedHeading - toDeg(getInertialReading());
+    if(reversed){
+      turnError *=(-1);
+    }
+    float pidT = turnError*0.8;
+    float RPower = fPower-pidT+pidP;
+    float LPower= fPower+pidT+pidP;
+
+    if(reversed){
+      RPower *= (-1);
+      LPower *= (-1);
+    }
+    SpinDrive(RPower,LPower );
+
+    if(completed == true){
+      break;
+    }
+    vex::task::sleep(20);
+  }
+
+  return 1;
+}
+
+int TurnOnlyPIDF(){
+
+  Brain.Timer.reset();
+
+  while(enableTurnPID) {
+    
+    if (resetBrainTimer) {
+      resetBrainTimer = false;
+      Brain.Timer.reset();
+    }
+
+
+    //1. get elapsed time
+    elapsedTime = roundOneDP(Brain.Timer.value());
+
+    //===============================================================
+    //-------------TURN PID-------------//
+
+    float actualHeading = toDeg(getInertialReading());
+  
+
+    
+
+    //inertial sensor switch --> inertial must be turned off when using vision
+    turnVals.updatePIDF(actualHeading); //passes inertial sensor val
+    offFromTarget =abs(turnVals.error);
+
+    //===============================================================
+    if(enableTurnPID != true){
+      break;
+    }
+    SpinDrive(-turnVals.calculateErrorPower(),turnVals.calculateErrorPower());    
+    
+    vex::task::sleep(20);
+  }
+  return 1;
+}
+
+
+int Stopper() { 
+  while (enableDriverPID || enableTurnPID) {
+    
+    if (offFromTarget <= errorRange || timeOut <= elapsedTime) {
+      wait(100, msec);
+      turnVals.resetPID();
+      driveVals.resetPID();
+      enableDriverPID = false;
+      fPower = 0;
+      SpinDrive(0,0);
+      enableTurnPID = false;
+      completed = true;
+    }
+
+
+
+    wait (20, msec);
+  }
+  return 1;
+}
+
+
+int OdomThread() {
+  while (enableOdom){
+    odomTracking();
+    wait(20, msec);
+  }
+  return 1;
+}
+
+//==========================
+//Go to Points
+//==========================
+
+void GoToPoint(MotionProfile pProfile, float error, float _timeOut) {
+  
+  float finalHeading = getHeadingBetweenPoints(finalPosition, pProfile.targetPoint);
+  //set global variables to arguments
+  desiredHeading = finalHeading;
+  targetPath = pProfile.desPath;
+
+
+  timeOut = _timeOut;
+
+  errorRange = error;
+
+  //enable pid
+  enableDriverPID = true;
+
+  completed = false;
+  vex::task driverPIDF(DriverPIDF);
+  vex::task stopper(Stopper);
+
+  while(!completed) {
+    wait(20, msec);
+  }
+  
+}
+
+void TurnToAngle (float finalHeading, float error, float _timeOut) {
+
+  vex::task turnOnlyPIDF(TurnOnlyPIDF);
+
+  //take motion profile
+  turnVals.desiredValue = finalHeading;
+  enableTurn = true;
+  enableTurnPID = true;
+  completed = false;
+
+//TIMEOUT = ERROR
+  errorRange = error;
+
+  timeOut = _timeOut;
+
+  //vex::task stopper(Stopper);
+  
 }

@@ -2,8 +2,8 @@
 
 void initPure() {
   prevIndex = 0;
-  shortestDistance = getDistance(finalPosition, finalPath.getPoint(finalPath.points.size()-1));
-  closeIndex = finalPath.points.size()-1;
+  shortestDistance = getDistance(finalPosition, finalPath->getPoint(finalPath->points.size()-1));
+  closeIndex = finalPath->points.size()-1;
   l.reset();
   targetLW = 0;
   targetRW = 0;
@@ -21,8 +21,8 @@ void findClosestPoint() {
 
   //by default, set shortest distance to distance from last point
   //loop through all points ahead of prevClosestPoint
-  for (float i = fmin(prevIndex + 1, finalPath.points.size()-1); i < finalPath.points.size(); i++) {   
-    float robotDistance = getDistanceP(&finalPosition, finalPath.getPointP(i));
+  for (float i = fmin(prevIndex + 1, finalPath->points.size()-1); i < finalPath->points.size(); i++) {   
+    float robotDistance = getDistanceP(&finalPosition, finalPath->getPointP(i));
 
     if (robotDistance < shortestDistance) {
       shortestDistance = robotDistance;
@@ -30,7 +30,7 @@ void findClosestPoint() {
     }
   }
 
-  pclosePoint = finalPath.getPointP(closeIndex);
+  pclosePoint = finalPath->getPointP(closeIndex);
   prevIndex = closeIndex;
 }
 
@@ -87,11 +87,11 @@ void findLookaheadPoint() {
   float runningT = 0; 
 
   //Loop through all points in path
-  for (float i = 0; i < finalPath.points.size()-2; i++) {
+  for (float i = 0; i < finalPath->points.size()-2; i++) {
     //d: vector from line segment start to end
     //f: vector from centre of circle to start
-    Vector d(finalPath.getPointP(i),finalPath.getPointP(i+1));
-    Vector f(&finalPosition, finalPath.getPointP(i));
+    Vector d(finalPath->getPointP(i),finalPath->getPointP(i+1));
+    Vector f(&finalPosition, finalPath->getPointP(i));
     float calcT = calcFractionalT(&d, &f, rLookAhead) + i;
 
     runningT = (calcT > runningT) ? calcT : runningT;
