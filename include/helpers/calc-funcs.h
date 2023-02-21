@@ -8,6 +8,7 @@
 #include <string>
 #include "/structs/path-struct.h"
 #include "/subsystems/chassis-info.h"
+#include <sstream>
 
 inline float fieldAngleOffset = 0;
 
@@ -116,22 +117,25 @@ inline float roundOneDP(float num) {
   return x10;
 }
 
-inline Point parseString(std::string split) {
-  std::string delimiter = ",";
-  std::string s1 = split.substr(0, split.find(delimiter)); // x
-  std::string s2 = s1.substr(0, s1.find(delimiter)); // y
-  std::string s3 = s2.substr(0, s2.find(delimiter)); // curvature
-  std::string s4 = s3.substr(0, s3.find(delimiter)); // targetVel
-  std::string s5 = s4.substr(0, s4.find(delimiter)); // distanceFromStart
+Point parseString(std::string split) {
+    std::stringstream sstr(split);
+    std::vector<float> v;
+    std::string substr;
 
-  
-  Point p({static_cast<float>(atof(s1.c_str())), static_cast<float>(atof(s2.c_str())) });
+    while (getline(sstr, substr, ',')) {
+      float f = 0.0;    
+      std::stringstream ss;
+      std::string s = substr;    
+      ss << s;
+      ss >> f;  //f now contains the converted string into a double  
+      v.push_back(f);
+    }
 
-  // p.setCurvature(atof(s3.c_str()));
-  // p.setTargetVelocity(atof(s4.c_str()));
-  // p.setDistance(atof(s5.c_str()));
-
-  return p;
+    Point p({ v.at(0), v.at(1) });
+    p.setTargetVelocity(v.at(2));
+    p.setDistance(v.at(3));
+    p.setCurvature(v.at(4));
+    return p;
 }
 
 inline Point pointDAway(Point start, float dis, float theta) {
