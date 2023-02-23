@@ -9,6 +9,7 @@
 
 
 extern void SpinDrive(float right, float left);
+extern void SpinDriveVel(float right, float left);
 
 //----New Odom-----
 inline float arcRadiusL, arcRadiusR, arcRadius;

@@ -19,7 +19,6 @@ float gearRatio = 3/4; //36 to 48
 //Odom FinalPos
 Point finalPosition({ 0,0 });
 
-
 //Fixed Values
 Point AWPStart({13.07, 122.5});
 Point Goal({135.2,135.6});

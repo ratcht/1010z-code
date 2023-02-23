@@ -16,6 +16,25 @@ void SpinDrive(float right, float left) {
 
 }
 
+void SpinDriveVel(float right, float left) {
+  //SPIN BASE (Values in RPM)
+  //Values are not adjusted to motor values
+  
+  
+  // LeftDrive.spin(forward, left/gearRatio, velocityUnits::rpm);
+  // LeftTop.spin(forward, left/gearRatio, velocityUnits::rpm);
+  // RightDrive.spin(forward, right/gearRatio, velocityUnits::rpm);
+  // RightTop.spin(forward, right/gearRatio, velocityUnits::rpm);
+  right = (40*right/M_PI)/(wheelDiameter/2);
+  left = (40*left/M_PI)/(wheelDiameter/2);
+
+  LeftDrive.spin(forward, left, velocityUnits::rpm);
+  LeftTop.spin(forward, left, velocityUnits::rpm);
+  RightDrive.spin(forward, right, velocityUnits::rpm);
+  RightTop.spin(forward, right, velocityUnits::rpm);
+
+}
+
 void initOdom() {
   prevOrientation = 0;
   absOrientation = 0;
