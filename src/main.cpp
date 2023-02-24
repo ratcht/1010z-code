@@ -13,13 +13,13 @@ competition Competition;
 void pre_auton(void) {
   vexcodeInit();
 
-  std::vector<Point> list;
+  std::deque<Point> list;
 
   // Create a text string, which is used to output the text file
   std::string myText;
 
   // Read from the text file
-  std::ifstream file("pure.txt");
+  std::ifstream file("genpath.txt");
 
   // Use a while loop together with the getline() function to read the file line by line
   while (std::getline(file, myText)){
@@ -31,12 +31,12 @@ void pre_auton(void) {
   // Close the file
   file.close();
 
-
- 
+  desPath.points = list;
+  finalPath = &desPath;
 }
 
 
-int autonToRun = 4;
+int autonToRun = 6;
 
 void autonomous(void) {
   if(autonToRun == 0) {
@@ -53,6 +53,9 @@ void autonomous(void) {
   else if(autonToRun==5) {
     Left();
   }
+    else if(autonToRun==6) {
+    PureTest();
+  }
 
 }
 
@@ -68,7 +71,7 @@ void initUserControl() {
   RightDrive.setStopping(hold);
   RightTop.setStopping(hold);
 
-  SetFlyWheelPower(9.5);
+  SetFlyWheelPower(10);
 }
 
 
@@ -111,7 +114,7 @@ void usercontrol(void) {
     //Volts Range:  -12 --> 12
     float turnRPM = turnVal * 0.12; //convert percentage to volts
     float fwdRPM = fwdVal * 0.12 * (1 - (std::abs(turnRPM/12) * turnImportance)); 
-    fwdRPM = rpmlimit.rateLimiter(fwdRPM, 65);
+    fwdRPM = rpmlimit.rateLimiter(fwdRPM, 95);
 
     SpinDrive(fwdRPM - turnRPM, fwdRPM + turnRPM);
 

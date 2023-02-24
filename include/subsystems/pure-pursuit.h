@@ -15,6 +15,7 @@
 
 //------VARS--------
 inline Path* finalPath;
+inline Path desPath;
 inline Point* lookaheadPoint;
 inline Point* pclosePoint;
 inline float curvature;
@@ -32,13 +33,15 @@ inline float signedCurvature;
 inline limiter l;
 
 
-inline float lookaheadDistance = 5;
+inline float lookaheadDistance = 10;
 
 //-----CALC VELOCITY--------
 
 inline float targetVel;
 inline float targetRW, targetLW; //target right/left wheel velocities
+inline float kMotorP[4] = {0.2, 0.0, 0.0, 0.25}; //Starting Vals (No goal being lifted)
 
+inline PIDF rightDrive(kMotorP), leftDrive(kMotorP);
 
 //-----Path Numbers---------
 
@@ -53,9 +56,10 @@ extern float calcFractionalT(Path* path, Point* robotPos, double lookahead, doub
 extern void findLookaheadPoint();
 extern float findCurvature();
 extern void calculateWheelVelocities();
+extern void FollowPath(Path* followedPath, float timeOut, float error);
 
 extern int RunPure();
-extern bool isPureActive = false;
+inline bool isPureActive = false;
 
 inline float offFromLast = INT8_MAX;
 

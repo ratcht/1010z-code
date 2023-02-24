@@ -9,23 +9,26 @@ int brainPrint() {
     Brain.Screen.newLine();
     Brain.Screen.print("Wheel Vals HP: %f, %f", EncoderHorz.position(degrees), EncoderPara.position(degrees) );
     Brain.Screen.newLine();
-    Point t = pointDAway(Point({0,0}), -30, 0);
     Brain.Screen.print("Final Pos (%f, %f)", finalPosition.x, finalPosition.y );
     Brain.Screen.newLine();
-    Brain.Screen.print(" offFrom targ %f", offFromTarget );
+
+ 
+    Brain.Screen.print(" DV R L  %f, %f", ((RightDrive.velocity(velocityUnits::rpm)*0.75*2*M_PI)/60)*2.75 );
     Brain.Screen.newLine();
-    Brain.Screen.print(" FlywheelPower %f", flyWheelPower );
+// Brain.Screen.print("PVEL %f", p1.desPath.points.at(3).targetVelocity );
+// Brain.Screen.newLine();
     Brain.Screen.newLine();
-        Brain.Screen.print(" FlywheelDesPower %f", flyWheelDesiredPower );
-    Brain.Screen.newLine();
-        Brain.Screen.print(" RPM %f", FlyWheel.velocity(rpm)*5 );
-    Brain.Screen.newLine();
-    // Brain.Screen.print("PVEL %f", p1.desPath.points.at(3).targetVelocity );
+    // Brain.Screen.print("TargRL: %f, %f", targetRW, targetLW   );
     // Brain.Screen.newLine();
-    Brain.Screen.print(completed );
-        Brain.Screen.newLine();
-    Brain.Screen.print(enableTurnPID );
-            Brain.Screen.newLine();
+    // Brain.Screen.print("lookahead: (%f, %f)", lookaheadPoint->x, lookaheadPoint->y   );
+    // Brain.Screen.newLine();
+
+    // Brain.Screen.print("closest: (%f, %f)", pclosePoint->x, pclosePoint->y   );
+    // Brain.Screen.newLine();
+    // Brain.Screen.print("targetVel: %f",targetVel  );
+    // Brain.Screen.newLine();
+    // Brain.Screen.print("signedCurv: %f",signedCurvature  );
+    // Brain.Screen.newLine();
     Brain.Screen.print( FlyWheel.temperature(temperatureUnits::celsius));
 
     wait(20, msec);
@@ -850,3 +853,13 @@ void SkillsAuto(){
 }
 
 //(-6.97,-25.25)
+
+void PureTest(){
+  vex::task BrainPrint(brainPrint);
+  enableOdom = true;
+  vex::task odomThread(OdomThread);
+  Path* path = finalPath;
+  FollowPath(path, 10, 2);
+
+
+}

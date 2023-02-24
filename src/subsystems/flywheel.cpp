@@ -13,11 +13,11 @@ void SetFlyWheelPower(float setting){
 }
 
 void FlyWheelIncrease(){
-  flyWheelDesiredPower = 9.3;
+  flyWheelDesiredPower = 10;
 }
 
 void FlyWheelDecrease(){
-  flyWheelDesiredPower = 8.8;
+  flyWheelDesiredPower = 9.5;
 }
 
 void FlyWheelSwap() {

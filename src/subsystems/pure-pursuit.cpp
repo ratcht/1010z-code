@@ -1,4 +1,4 @@
-#include "subsystems/pure-pursuit/pure-pursuit.h"
+#include "subsystems/pure-pursuit.h"
 
 void initPure() {
   prevIndex = 0;
@@ -21,7 +21,7 @@ void findClosestPoint() {
   //by default, set shortest distance to distance from last point
   //loop through all points ahead of prevClosestPoint
   shortestDistance = finalPath->points.at(finalPath->points.size()-1).distanceFromStart;
-  for (float i = fmin(prevIndex + 1, finalPath->points.size() - 1); i < finalPath->points.size(); i++) {
+  for (float i = 0; i < finalPath->points.size(); i++) {
     float robotDistance = getDistanceP(&finalPosition, finalPath->getPointP(i));
 
     if (robotDistance < shortestDistance) {
@@ -138,6 +138,8 @@ float findCurvature() {
   float signedCurvature = ((2 * relativeX) / pow(lookaheadDistance, 2)) * side;
 
   return signedCurvature;
+
+  
 }
 
 
@@ -168,7 +170,16 @@ int RunPure(){
     findLookaheadPoint();
     signedCurvature = findCurvature();
     calculateWheelVelocities();
-    SpinDriveVel(targetRW, targetLW);
+
+    float kMotorZ[4] = {0.2, 0.0, 0.0, 0.3}; //Starting Vals (No goal being lifted)
+    leftDrive.changePID(kMotorZ);
+    rightDrive.changePID(kMotorZ);
+
+    float powerFL = leftDrive.calculateForwardPower(targetLW);
+    float powerFR = rightDrive.calculateForwardPower(targetRW);
+
+
+    SpinDrive(powerFR, powerFL);
 
     //calculate error
     offFromLast = getDistanceP(&finalPosition, &finalPath->points.at(finalPath->points.size()-1));
@@ -180,14 +191,20 @@ int RunPure(){
 }
 
 void FollowPath(Path* followedPath, float timeOut, float error){
+    prevIndex = 0;
+
   Brain.Timer.reset();
   isPureActive = true;
   offFromLast = INT8_MAX;
   finalPath = followedPath;
   vex::task runPure(RunPure);
-  elapsedTime = roundOneDP(Brain.Timer.value());
-  while (elapsedTime <= timeOut || offFromLast >= error){
-    wait(20, msec);
-  }
-  isPureActive = false;
+  // elapsedTime = roundOneDP(Brain.Timer.value());
+  // while (elapsedTime <= timeOut || offFromLast >= error){
+  //   wait(20, msec);
+  // }  // elapsedTime = roundOneDP(Brain.Timer.value());
+  // while (elapsedTime <= timeOut || offFromLast >= error){
+  //   wait(20, msec);
+  // }
+ // isPureActive = false;
 }
+

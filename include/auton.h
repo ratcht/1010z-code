@@ -7,6 +7,8 @@
 #include "subsystems/pistons.h"
 #include "subsystems/flywheel.h"
 #include "subsystems/intake.h"
+#include "subsystems/pure-pursuit.h"
+
 #include "helpers/rate-limiter.h"
 #include "pidf/pidf.h"
 #include "helpers/calc-funcs.h"
@@ -19,6 +21,7 @@ extern void RightAuto();
 extern void BetterRightAuto();
 extern void SkillsAuto();
 extern void Left();
+extern void PureTest();
 
 
 

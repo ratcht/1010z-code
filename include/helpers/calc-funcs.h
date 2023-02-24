@@ -117,7 +117,7 @@ inline float roundOneDP(float num) {
   return x10;
 }
 
-Point parseString(std::string split) {
+inline Point parseString(std::string split) {
     std::stringstream sstr(split);
     std::vector<float> v;
     std::string substr;
