@@ -15,7 +15,7 @@
 
 //------VARS--------
 inline Path* finalPath;
-inline Path desPath;
+inline Path desPath1, desPath2;
 inline Point* lookaheadPoint;
 inline Point* pclosePoint;
 inline float curvature;
@@ -33,13 +33,13 @@ inline float signedCurvature;
 inline limiter l;
 
 
-inline float lookaheadDistance = 10;
-
+inline float lookaheadDistance = 15;
 //-----CALC VELOCITY--------
 
 inline float targetVel;
 inline float targetRW, targetLW; //target right/left wheel velocities
 inline float kMotorP[4] = {0.2, 0.0, 0.0, 0.25}; //Starting Vals (No goal being lifted)
+inline float maxSpeed = 30;
 
 inline PIDF rightDrive(kMotorP), leftDrive(kMotorP);
 

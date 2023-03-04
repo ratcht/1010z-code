@@ -39,7 +39,8 @@ void initOdom() {
   prevOrientation = 0;
   absOrientation = 0;
   deltaOrientation = 0;
-  Point finalPosition({0,0});
+  
+  finalPosition = startingOffset;
 
   deltaHT = 0, deltaPT = 0; //Tracking wheel distance travelled since cycle
   totalDeltaHT = 0, totalDeltaPT = 0;; //Tracking wheel total change since reset
@@ -107,8 +108,14 @@ void odomTracking() {
 
 	finalPosition.y += h2 * (-sinP); // -sin(x) = sin(-x)
 	finalPosition.x += h2 * cosP; // cos(x) = cos(-x)
+
 }
 
+void AddStartingOffset(){
+  // finalPosition.y += startingOffset.y;
+  // finalPosition.x += startingOffset.x;
+ // absOrientation += ((startingOffsetAngle/180)*(M_PI));
+}
 
 int DriverPIDF(){
   Brain.Timer.reset();
@@ -281,7 +288,7 @@ void TurnToAngle (float finalHeading, float error, float _timeOut) {
   enableTurnPID = true;
   completed = false;
 
-//TIMEOUT = ERROR
+  //TIMEOUT = ERROR
   errorRange = error;
 
   timeOut = _timeOut;

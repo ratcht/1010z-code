@@ -3,7 +3,7 @@
 float wheelDiameter = 2.75; //wheel diameter 
 float hTCentre = 0; // Left Tracking Wheel distance to centre: Sl
 float pTCentre = 1.5; // Back Tracking Wheel distance to centre: Ss
-float trackWidth = 12; // Track Width
+float trackWidth = 15; // Track Width
 
 float gearRatio = 3/4; //36 to 48
  
@@ -17,7 +17,13 @@ float gearRatio = 3/4; //36 to 48
 //float maxAccel = 20; // inches per second^2
 
 //Odom FinalPos
+//Point finalPosition({ 61.,-36.16 });
+
+//Point startingOffset({61,-36.16});
 Point finalPosition({ 0,0 });
+
+Point startingOffset({0,0});
+float startingOffsetAngle = 0;
 
 //Fixed Values
 Point AWPStart({13.07, 122.5});

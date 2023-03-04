@@ -55,6 +55,14 @@ struct Point {
     //empty constructor
   }
 
+  Point lerp(Point p, float t){
+    Point newP({this->x + (p.x-this->x)*t, this->y + (p.y-this->y)*t});
+    newP.setCurvature(this->curvature);
+    newP.setTargetVelocity(this->targetVelocity);
+
+    return newP;
+  }
+
 };
 
 //return the magnitude of a vector: c^2 = a^2 + b^2

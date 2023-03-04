@@ -19,7 +19,7 @@ void pre_auton(void) {
   std::string myText;
 
   // Read from the text file
-  std::ifstream file("genpath.txt");
+  std::ifstream file("pathone.txt");
 
   // Use a while loop together with the getline() function to read the file line by line
   while (std::getline(file, myText)){
@@ -30,13 +30,34 @@ void pre_auton(void) {
 
   // Close the file
   file.close();
+  desPath1.points = list;
 
-  desPath.points = list;
-  finalPath = &desPath;
+
+//_______________________________________________
+
+  std::deque<Point> list2;
+
+  // Create a text string, which is used to output the text file
+  std::string myText2;
+
+  // Read from the text file
+  std::ifstream file2("pathtwo.txt");
+
+  // Use a while loop together with the getline() function to read the file line by line
+  while (std::getline(file2, myText2)){
+    Point one = parseString(myText2);
+
+    list2.push_back(one);
+  }
+
+  // Close the file
+  file.close();
+  desPath2.points = list2;
+
 }
 
 
-int autonToRun = 6;
+int autonToRun = 3;
 
 void autonomous(void) {
   if(autonToRun == 0) {
@@ -47,16 +68,13 @@ void autonomous(void) {
     RightAuto();
   } else if(autonToRun==3) {
     SkillsAuto();
-  }else if(autonToRun==4) {
+  } else if(autonToRun==4) {
     BetterRightAuto();
-  }
-  else if(autonToRun==5) {
+  } else if(autonToRun==5) {
     Left();
-  }
-    else if(autonToRun==6) {
+  } else if(autonToRun==6) {
     PureTest();
   }
-
 }
 
 
@@ -71,7 +89,7 @@ void initUserControl() {
   RightDrive.setStopping(hold);
   RightTop.setStopping(hold);
 
-  SetFlyWheelPower(10);
+  SetFlyWheelPower(9.5);
 }
 
 
@@ -93,7 +111,7 @@ void usercontrol(void) {
   Controller1.ButtonR2.pressed(ShooterSwap);
 
 
-  limiter rpmlimit;
+  limiter rpmlimit, turnlimit;
   initUserControl();
 
   Controller1.ButtonL1.pressed(ShootEngaged);
@@ -111,8 +129,11 @@ void usercontrol(void) {
     float fwdVal = Controller1.Axis3.position(percent);
     float turnVal = Controller1.Axis1.position(percent);
 
+
     //Volts Range:  -12 --> 12
     float turnRPM = turnVal * 0.12; //convert percentage to volts
+    turnRPM = turnlimit.rateLimiter(turnRPM, 75);
+
     float fwdRPM = fwdVal * 0.12 * (1 - (std::abs(turnRPM/12) * turnImportance)); 
     fwdRPM = rpmlimit.rateLimiter(fwdRPM, 95);
 

@@ -27,7 +27,8 @@ extern float gearRatio; //base gearRatio
 //extern float maxAccel;
 
 extern Point finalPosition;
-
+extern Point startingOffset;
+extern float startingOffsetAngle;
 extern Point AWPStart;
 
 extern Point Goal;

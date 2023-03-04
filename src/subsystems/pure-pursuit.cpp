@@ -105,9 +105,11 @@ float calcFractionalT(Path* path, Point* robotPos, double lookahead, double star
 void findLookaheadPoint() {
 
   float calcT = calcFractionalT(finalPath, &finalPosition, lookaheadDistance, closeIndex);
-  float index = round(calcT);
+  float index = floor(calcT);
 
-  lookaheadPoint = finalPath->getPointP(index);
+  float t = calcT - index;
+  Point l = finalPath->getPoint(index).lerp(finalPath->getPoint(index+1), t);
+  lookaheadPoint = &l;
 }
 
 
@@ -116,12 +118,12 @@ float findCurvature() {
   //find curvature of current robot arc
   //curvature = 2x/L^2
   //where x is horizontal distance to the point and L is the lookahead
+  float theta = M_PI/2 - absOrientation;
+  float a = -(tan(theta));
+  float b = 1;
+  float c = (tan(theta) * finalPosition.x) - finalPosition.y;
 
-  float aCurvatureSlope = -(atan(absOrientation));
-  float bCurvatureSlope = 1;
-  float cCurvatureSlope = (atan(absOrientation) * finalPosition.x) - finalPosition.y;
-
-  float relativeX = abs(aCurvatureSlope * lookaheadPoint->x + bCurvatureSlope * lookaheadPoint->y + cCurvatureSlope) / sqrt(pow(aCurvatureSlope, 2) + pow(bCurvatureSlope, 2));
+  float relativeX = abs(a * lookaheadPoint->x + b * lookaheadPoint->y + c) / sqrt(pow(a, 2) + pow(b, 2));
 
   //get signed curvature
   //side = signum(cross product) = signum((By − Ry) * (Lx − Rx) − (Bx − Rx) * (Ly − Ry))
@@ -130,7 +132,7 @@ float findCurvature() {
 
 
   //sign = signum(cross product)
-  float crossProduct = (cos(absOrientation) * (lookaheadPoint->x - finalPosition.x)) - (sin(absOrientation) * (lookaheadPoint->y - finalPosition.y));
+  float crossProduct = (sin(theta) * (lookaheadPoint->x - finalPosition.x)) - (cos(absOrientation) * (lookaheadPoint->y - finalPosition.y));
 
   //signum ternary operator
   float side = (crossProduct > 0) ? 1 : ((crossProduct < 0) ? -1 : 0);
@@ -162,10 +164,19 @@ void calculateWheelVelocities() {
   targetLW = targetVel * (2 + (signedCurvature * trackWidth)) / 2;
   targetRW = targetVel * (2 - (signedCurvature * trackWidth)) / 2;
 
+  float ratio = std::max(targetLW, targetRW) / maxSpeed;
+  if(ratio>1){
+    targetLW/=ratio;
+    targetRW/=ratio;
+  }
+
 }
 
 int RunPure(){
   while(isPureActive){
+    if(reversed){
+      absOrientation -= M_PI;
+    }
     findClosestPoint();
     findLookaheadPoint();
     signedCurvature = findCurvature();
@@ -175,11 +186,16 @@ int RunPure(){
     leftDrive.changePID(kMotorZ);
     rightDrive.changePID(kMotorZ);
 
+    
     float powerFL = leftDrive.calculateForwardPower(targetLW);
     float powerFR = rightDrive.calculateForwardPower(targetRW);
 
-
-    SpinDrive(powerFR, powerFL);
+    if(reversed){
+      SpinDrive(-powerFL, -powerFR);
+    } else{
+      SpinDrive(powerFR, powerFL);
+    }
+    //SpinDrive(powerFR, powerFL);
 
     //calculate error
     offFromLast = getDistanceP(&finalPosition, &finalPath->points.at(finalPath->points.size()-1));
@@ -191,20 +207,21 @@ int RunPure(){
 }
 
 void FollowPath(Path* followedPath, float timeOut, float error){
-    prevIndex = 0;
+  prevIndex = 0;
 
   Brain.Timer.reset();
   isPureActive = true;
   offFromLast = INT8_MAX;
   finalPath = followedPath;
   vex::task runPure(RunPure);
-  // elapsedTime = roundOneDP(Brain.Timer.value());
-  // while (elapsedTime <= timeOut || offFromLast >= error){
-  //   wait(20, msec);
-  // }  // elapsedTime = roundOneDP(Brain.Timer.value());
-  // while (elapsedTime <= timeOut || offFromLast >= error){
-  //   wait(20, msec);
-  // }
- // isPureActive = false;
+  elapsedTime = roundOneDP(Brain.Timer.value());
+
+
+  while (elapsedTime <= timeOut && offFromLast >= error){
+    wait(20, msec);
+  }  // elapsedTime = roundOneDP(Brain.Timer.value());
+  SpinDrive(0,0);
+  vex::task::stop(RunPure);
+  isPureActive = false;
 }
 

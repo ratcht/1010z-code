@@ -10,7 +10,6 @@
 #include "/subsystems/chassis-info.h"
 #include <sstream>
 
-inline float fieldAngleOffset = 0;
 
 //clamp function
 inline float clamp(float d, float min, float max) {
@@ -41,7 +40,7 @@ inline float getInertialReading() {
   float in2 = toRads(Inertial2.rotation());
  // float in3 = Inertial3.rotation() * M_PI/180;
  //Add Field Offset
-  in2 += fieldAngleOffset;
+  in2 += startingOffsetAngle;
   return in2;
 }
 

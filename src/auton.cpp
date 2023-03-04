@@ -12,24 +12,29 @@ int brainPrint() {
     Brain.Screen.print("Final Pos (%f, %f)", finalPosition.x, finalPosition.y );
     Brain.Screen.newLine();
 
- 
-    Brain.Screen.print(" DV R L  %f, %f", ((RightDrive.velocity(velocityUnits::rpm)*0.75*2*M_PI)/60)*2.75 );
+    Brain.Screen.print(completed );
     Brain.Screen.newLine();
-// Brain.Screen.print("PVEL %f", p1.desPath.points.at(3).targetVelocity );
-// Brain.Screen.newLine();
+    Brain.Screen.print(desPath1.points.size() );
     Brain.Screen.newLine();
-    // Brain.Screen.print("TargRL: %f, %f", targetRW, targetLW   );
-    // Brain.Screen.newLine();
-    // Brain.Screen.print("lookahead: (%f, %f)", lookaheadPoint->x, lookaheadPoint->y   );
-    // Brain.Screen.newLine();
 
-    // Brain.Screen.print("closest: (%f, %f)", pclosePoint->x, pclosePoint->y   );
-    // Brain.Screen.newLine();
-    // Brain.Screen.print("targetVel: %f",targetVel  );
-    // Brain.Screen.newLine();
-    // Brain.Screen.print("signedCurv: %f",signedCurvature  );
-    // Brain.Screen.newLine();
-    Brain.Screen.print( FlyWheel.temperature(temperatureUnits::celsius));
+ 
+//     Brain.Screen.print(" DV R L  %f, %f", (((RightDrive.velocity(velocityUnits::rpm)*0.75*2*M_PI)/60)*2.75), (((LeftDrive.velocity(velocityUnits::rpm)*0.75*2*M_PI)/60)*2.75) );
+//     Brain.Screen.newLine();
+// // Brain.Screen.print("PVEL %f", p1.desPath.points.at(3).targetVelocity );
+// // Brain.Screen.newLine();
+//     Brain.Screen.newLine();
+    Brain.Screen.print("TargRL: %f, %f", targetRW, targetLW   );
+    Brain.Screen.newLine();
+  //    Brain.Screen.print("lookahead: (%f, %f)", lookaheadPoint->x, lookaheadPoint->y   );
+  //    Brain.Screen.newLine();
+
+  //   // Brain.Screen.print("closest: (%f, %f)", pclosePoint->x, pclosePoint->y   );
+  //   // Brain.Screen.newLine();
+  //  //  Brain.Screen.print("targetVelLW: %f, %f", -targetRW, -targetLW  );
+  //    //Brain.Screen.newLine();
+  //    Brain.Screen.print("signedCurv: %f",signedCurvature  );
+  //    Brain.Screen.newLine();
+    // Brain.Screen.print( FlyWheel.temperature(temperatureUnits::celsius));
 
     wait(20, msec);
   }
@@ -449,9 +454,9 @@ void SkillsAuto(){
   SpinDrive(0,0);
   
   //Motion3
-   fixedHeading = -51.8;
-   GoToPoint(_p3, 1, 1);
-   wait(100, msec);
+  fixedHeading = -51.8;
+  GoToPoint(_p3, 1, 1);
+  wait(100, msec);
 
   float k2[4] = {0.04, 0.001, 0.1, 0.0};
   turnVals.changePID(k2);
@@ -467,12 +472,12 @@ void SkillsAuto(){
   intakeOn = true;
   fixedHeading = 87;
   MotionProfile _p4(   pointDAway(finalPosition, -15, 87),    finalPosition,       40,      50);
-  GoToPoint(_p4, 3, 0.75);
+  GoToPoint(_p4, 3, 0.84);
 
   //Motion2
   ShootEngaged();
   reversed = false;
-  SetFlyWheelPower(9.7);
+  SetFlyWheelPower(9.4);
   flyWheelOn = true;
   fixedHeading = 87;
   MotionProfile _p5(   pointDAway(finalPosition, 5, 87.6),    finalPosition,       40,      50);
@@ -483,26 +488,25 @@ void SkillsAuto(){
 
 
  //motion
-  float k3[4] = {0.055, 0.001, 0.1, 0.0};
+  float k3[4] = {0.15, 0.001, 0.1, 0.0};
   intakeOn = false;
   turnVals.changePID(k3);
   TurnToAngle(0, 4, 30);
-  wait(850, msec);
+  wait(650, msec);
   enableTurnPID = false;
   completed = true;
   SpinDrive(0,0);
-  wait(100, msec);
 
   //motion
   fixedHeading = 0;
-  MotionProfile _p6(   pointDAway(finalPosition, 56, 0),    finalPosition,       50,      60);
-  GoToPoint(_p6, 1, 2);
+  MotionProfile _p6(   pointDAway(finalPosition, 64, 0),    finalPosition,       50,      60);
+  GoToPoint(_p6, 1, 1.8);
   wait(400,msec);
 
   float k4[4] = {0.54, 0.001, 0.1, 0.0};
   intakeOn = false;
   turnVals.changePID(k4);
-  TurnToAngle(9.5, 4, 30);
+  TurnToAngle(8.8, 4, 30);
   wait(450, msec);
   enableTurnPID = false;
   completed = true;
@@ -512,12 +516,12 @@ void SkillsAuto(){
   wait(1300, msec);
   shootOn = false;
 
-  //next motion
+ //next motion
   reversed = true;
   intakeOn = true;
-  fixedHeading = 7.6;
+  fixedHeading = 9;
   IntakeEngaged();
-  MotionProfile _p7(   pointDAway(finalPosition, -20, 7.6),    finalPosition,       50,      60);
+  MotionProfile _p7(   pointDAway(finalPosition, -20, 9),    finalPosition,       50,      60);
   GoToPoint(_p7, 3, 0.45);
   reversed = false;
   flyWheelOn = false;
@@ -527,25 +531,25 @@ void SkillsAuto(){
   IntakeEngaged();
   intakeOn = true;
   turnVals.changePID(k5);
-  TurnToAngle(118, 4, 30);
+  TurnToAngle(120, 4, 30);
   wait(750, msec);
   enableTurnPID = false;
   completed = true;
   SpinDrive(0,0);
 
   //motion
-  fixedHeading = 120;
-  MotionProfile _p8(   pointDAway(finalPosition, 23, 120),    finalPosition,       40,      40);
+  fixedHeading = 124;
+  MotionProfile _p8(   pointDAway(finalPosition, 23, 124),    finalPosition,       40,      40);
   GoToPoint(_p8, 1, 1.4);
   completed = true;
   wait(200,msec);
   completed = false;
 
     //next
-  SetFlyWheelPower(9.2);
+  SetFlyWheelPower(8.35);
   flyWheelOn = true;
   turnVals.changePID(k5);
-  TurnToAngle(35.5, 4, 30);
+  TurnToAngle(40, 4, 30);
   wait(750, msec);
   enableTurnPID = false;
   completed = true;
@@ -553,17 +557,17 @@ void SkillsAuto(){
   wait(100, msec);
 
   //motion
-  fixedHeading = 37;
-  MotionProfile _p9(   pointDAway(finalPosition, 33, 39),   finalPosition,       45,      40);
-  GoToPoint(_p9, 1, 1.7);
-  wait(600,msec);
+  fixedHeading = Inertial2.heading();
+  MotionProfile _p9(   pointDAway(finalPosition, 33, Inertial2.heading()),   finalPosition,       20,      20);
+  GoToPoint(_p9, 1, 2.2);
+  wait(900,msec);
 
   //next
   float k10[4] = {0.23, 0.001, 0.1, 0.0};
   turnVals.changePID(k10);
   intakeOn = false;
   ShootEngaged();
-  TurnToAngle(-37, 4, 30);
+  TurnToAngle(-31, 4, 30);
   wait(750, msec);
   enableTurnPID = false;
   completed = true;
@@ -594,8 +598,8 @@ void SkillsAuto(){
 
   reversed = true;
   fixedHeading = Inertial2.rotation();
-  MotionProfile _p10(   pointDAway(finalPosition, -8, Inertial2.rotation()),   finalPosition,       60,      60);
-  GoToPoint(_p10, 1, 0.4);
+  MotionProfile _p10(   pointDAway(finalPosition, -8.6, Inertial2.rotation()),   finalPosition,       60,      60);
+  GoToPoint(_p10, 1, 0.45);
   reversed = false;
 
   intakeOn = true;
@@ -610,7 +614,7 @@ void SkillsAuto(){
   wait(100, msec);
 
   fixedHeading = 0;
-  MotionProfile _p11(   pointDAway(finalPosition, 47.5, 0),   finalPosition,       20,      20);
+  MotionProfile _p11(   pointDAway(finalPosition, 54, 0),   finalPosition,       20,      20);
   GoToPoint(_p11, 1, 4);
   wait(600, msec);
 
@@ -649,7 +653,7 @@ void SkillsAuto(){
 
   turnVals.changePID(k10);
   TurnToAngle(-90, 4, 30);
-  wait(650, msec);
+  wait(700, msec);
   enableTurnPID = false;
   completed = true;
   SpinDrive(0,0);
@@ -657,7 +661,7 @@ void SkillsAuto(){
   
   reversed = true;
   fixedHeading = Inertial2.rotation();
-  MotionProfile _p13(   pointDAway(finalPosition, -39, Inertial2.rotation()),   finalPosition,       60,      60);
+  MotionProfile _p13(   pointDAway(finalPosition, -37, Inertial2.rotation()),   finalPosition,       60,      60);
   GoToPoint(_p13, 1, 1.5);
   reversed = false;
   wait(500, msec);
@@ -674,8 +678,8 @@ void SkillsAuto(){
   reversed = true;
   shootOn = true;
   fixedHeading = -180;
-  MotionProfile _p14(   pointDAway(finalPosition, -14, -180),   finalPosition,       70,      70);
-  GoToPoint(_p14, 1, 0.8);
+  MotionProfile _p14(   pointDAway(finalPosition, -16, -180),   finalPosition,       70,      70);
+  GoToPoint(_p14, 1, 0.9);
   reversed = false;
 
 
@@ -696,40 +700,10 @@ void SkillsAuto(){
   wait(200, msec);
   
   fixedHeading = Inertial2.rotation();
-  MotionProfile _p16(   pointDAway(finalPosition, 15, Inertial2.rotation()),   finalPosition,       60,      60);
+  MotionProfile _p16(   pointDAway(finalPosition, 14, Inertial2.rotation()),   finalPosition,       60,      60);
   GoToPoint(_p16, 1, 1.1);
 
-  float k12[4] = {0.07, 0.001, 0.1, 0.0};
-  shootOn = false;
-  IntakeEngaged();
-  turnVals.changePID(k12);
-  TurnToAngle(-90, 4, 30);
-  wait(950, msec);
-  enableTurnPID = false;
-  completed = true;
-  SpinDrive(0,0);
-  intakeOn = true;
-  wait(200, msec);
-
-    fixedHeading = -90;
-    reversed = true;
-  MotionProfile _p17(   pointDAway(finalPosition, -17, -90),   finalPosition,       60,      60);
-  GoToPoint(_p17, 1, 1.5);
-  reversed = false;
-
-    MotionProfile _p18(   pointDAway(finalPosition, 12, -90),   finalPosition,       60,      60);
-  GoToPoint(_p18, 1, 0.9);
-
-    float k13[4] = {0.11, 0.001, 0.1, 0.0};
-  turnVals.changePID(k13);
-  TurnToAngle(-135, 4, 30);
-  wait(850, msec);
-  enableTurnPID = false;
-  completed = true;
-  SpinDrive(0,0);
-  wait(800, msec);
-
-  EndgameFire();
+  
   //   //motion
   //   reversed = true;
   // fixedHeading = Inertial2.rotation();
@@ -739,7 +713,6 @@ void SkillsAuto(){
   // reversed = false;
 
  }
-
  void RightAuto(){
   vex::task runFlywheel(FlyWheelThread);
   vex::task runIntake(IntakeThread);
@@ -855,11 +828,16 @@ void SkillsAuto(){
 //(-6.97,-25.25)
 
 void PureTest(){
+  wait(1000, msec);
+  vex::task runFlywheel(FlyWheelThread);
+  vex::task runIntake(IntakeThread);
   vex::task BrainPrint(brainPrint);
   enableOdom = true;
   vex::task odomThread(OdomThread);
-  Path* path = finalPath;
-  FollowPath(path, 10, 2);
+  reversed = true;
+  Path* path = &desPath1;
+  FollowPath(path, 15, 1);
+
 
 
 }

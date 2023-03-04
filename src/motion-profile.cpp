@@ -11,6 +11,7 @@ void MotionProfile::determineTopSpeed() {
   attainableVelocity = std::min(topReachableSpeed, maxVel);
 }
 
+
 void MotionProfile::determineTimes() {
   //t1 = t3
   //d1 = d3
@@ -108,6 +109,8 @@ MotionProfile::MotionProfile(Point targetPoint, Point startPoint, float maxVel, 
   generatePointsinPath();
   
 }
+
+
 
 
 
